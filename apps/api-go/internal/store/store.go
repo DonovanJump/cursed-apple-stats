@@ -226,10 +226,10 @@ func (s *Store) UpsertMatchHistoryEntry(ctx context.Context, entry PlayerMatchHi
 
 func (s *Store) GetRecentMatchesBySteamID64(ctx context.Context, steamID64 string, limit int) ([]RecentMatch, error) {
     if limit <= 0 {
-        limit = 10
+        limit = 1000
     }
-    if limit > 50 {
-        limit = 50
+    if limit > 5000 {
+        limit = 5000
     }
 
     rows, err := s.pool.Query(ctx, `

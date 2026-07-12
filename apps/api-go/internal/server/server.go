@@ -65,7 +65,7 @@ func (s *Server) handleMeMatches(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    matches, err := s.sync.RecentMatches(r.Context(), s.steamID64, 12)
+    matches, err := s.sync.RecentMatches(r.Context(), s.steamID64, 1000)
     if err != nil {
         respondJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
         return

@@ -105,7 +105,7 @@ export default async function HomePage() {
           </p>
         </div>
         <div className="matches-list">
-          {matches.slice(0, 8).map((match) => (
+          {matches.map((match) => (
             <article key={match.match_id} className="match-row">
               <div>
                 <p className="match-hero">Hero {match.hero_id}</p>
