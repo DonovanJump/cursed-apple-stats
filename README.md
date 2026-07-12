@@ -29,7 +29,10 @@ Deadlock player tracking and analytics platform built with React (Next.js), Go, 
 2. Start Postgres (Docker):
    - `docker compose up -d db`
 3. Apply migration:
-   - Run `db/migrations/0001_init.sql` against your database.
+   - Migration is auto-applied on first DB initialization via `docker-entrypoint-initdb.d`.
+   - If the `pg_data` volume already exists, init scripts will not rerun.
+   - To re-run initialization from scratch: `docker compose down -v` then `docker compose up -d db`.
+   - Schema validation notes: `docs/deadlock-schema-check.md`
 4. Start API:
    - `cd apps/api-go`
    - `go run ./cmd/api`

@@ -18,6 +18,8 @@ Base path: `/api/v1`
 
 - `GET /me`
   - Current user profile and last sync metadata
+- `GET /me/matches`
+  - Recent synced match history for the current user
 - `POST /me/sync`
   - Triggers incremental sync for current user
 - `GET /me/summary`

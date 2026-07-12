@@ -9,6 +9,15 @@ CREATE TABLE IF NOT EXISTS users (
     last_synced_at TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS player_sync_state (
+    account_id BIGINT PRIMARY KEY,
+    last_match_history_sync_at TIMESTAMPTZ,
+    last_metadata_sync_at TIMESTAMPTZ,
+    next_allowed_refetch_at TIMESTAMPTZ,
+    consecutive_failures INTEGER NOT NULL DEFAULT 0,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS tracked_players (
     id BIGSERIAL PRIMARY KEY,
     owner_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -22,8 +31,11 @@ CREATE TABLE IF NOT EXISTS matches (
     match_id BIGINT PRIMARY KEY,
     start_time TIMESTAMPTZ NOT NULL,
     duration_seconds INTEGER NOT NULL,
-    result TEXT,
-    mode TEXT,
+    game_mode INTEGER,
+    match_mode INTEGER,
+    match_result INTEGER,
+    objectives_mask_team0 INTEGER,
+    objectives_mask_team1 INTEGER,
     raw_json JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -33,11 +45,17 @@ CREATE TABLE IF NOT EXISTS player_matches (
     match_id BIGINT NOT NULL REFERENCES matches(match_id) ON DELETE CASCADE,
     account_id BIGINT NOT NULL,
     hero_id INTEGER NOT NULL,
+    hero_level INTEGER,
     team INTEGER,
     kills INTEGER,
     deaths INTEGER,
     assists INTEGER,
+    denies INTEGER,
+    last_hits INTEGER,
+    net_worth INTEGER,
     won BOOLEAN,
+    abandoned_time_seconds INTEGER,
+    team_abandoned BOOLEAN,
     first_death_at_seconds INTEGER,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (match_id, account_id)
@@ -86,5 +104,6 @@ CREATE TABLE IF NOT EXISTS generated_insights (
 
 CREATE INDEX IF NOT EXISTS idx_player_matches_account_id ON player_matches(account_id);
 CREATE INDEX IF NOT EXISTS idx_player_matches_match_id ON player_matches(match_id);
+CREATE INDEX IF NOT EXISTS idx_matches_start_time ON matches(start_time DESC);
 CREATE INDEX IF NOT EXISTS idx_match_items_account_id ON match_items(account_id);
 CREATE INDEX IF NOT EXISTS idx_generated_insights_account_id_created_at ON generated_insights(account_id, created_at DESC);
